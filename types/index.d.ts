@@ -189,6 +189,8 @@ export interface IDatePickerProps extends Omit<IPickerHeaderProps,'onPickerConfi
         minute?: string,
         second?: string,
     },
+    // 是否支持秒选择
+    hasSecond?:boolean;
     //初始默认值,默认为当前时间
     date?: Date,
     //最小日期,默认为当前时间的前10年
@@ -271,6 +273,14 @@ export interface IDateRangePickerProps extends Omit<ICommonPickerProps,'onValueC
      * 结束时间的最大时间
      */
     endMaxDate?: Date | string,
+    /**
+     * 是否显示秒
+     */
+    isSecond?:boolean;
+    /**
+     * 显示时间
+     */
+    showTimer?: boolean;
     style?: StyleProp<ViewStyle>,
 }
 

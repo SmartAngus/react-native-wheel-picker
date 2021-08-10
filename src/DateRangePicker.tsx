@@ -33,7 +33,9 @@ export default class DateRangePicker extends PureComponent<IProps,any>{
         startMinDate: moment().add(-30,'year').toDate(),
         startMaxDate: moment().add(10,'year').toDate(),
         endMaxDate: moment().add(10,'year').toDate(),
-        onlyFinishTrigger:true
+        onlyFinishTrigger:true,
+        isSecond: false,
+        showTimer: false,
     };
 
 
@@ -75,9 +77,9 @@ export default class DateRangePicker extends PureComponent<IProps,any>{
                     null
                 }
                 <View style={{flexDirection:'row',paddingHorizontal:8,alignItems:'center',marginTop:18}}>
-                    <TimeBaseView style={{flex:1}} index={1} activeIndex={this.state.activeIndex} onPress={this.timeClick} date={this.state.startDate}/>
+                    <TimeBaseView style={{flex:1}} index={1} isSecond={this.props.isSecond} showTimer={this.props.showTimer} activeIndex={this.state.activeIndex} onPress={this.timeClick} date={this.state.startDate}/>
                     <Text style={{marginHorizontal:6,color: '#666666'}}>至</Text>
-                    <TimeBaseView style={{flex:1}} index={2} activeIndex={this.state.activeIndex} onPress={this.timeClick} date={this.state.endDate}/>
+                    <TimeBaseView style={{flex:1}} index={2} isSecond={this.props.isSecond} showTimer={this.props.showTimer} activeIndex={this.state.activeIndex} onPress={this.timeClick} date={this.state.endDate}/>
                 </View>
                 <View style={{height:40,flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>
                     {this.props.errorMessage?
@@ -99,11 +101,11 @@ export default class DateRangePicker extends PureComponent<IProps,any>{
                             style={{height:1/PixelRatio.get(),backgroundColor:'#d9d9d9',marginBottom:10}}
                         />:null}
                     {this.state.activeIndex==1?
-                        <View style={{flexDirection:'row',paddingHorizontal:8}}>
+                        <View style={{flexDirection:'row',paddingHorizontal:4}}>
                             <DatePicker
                                 style={[localStyles.picker]}
                                 showHeader={false}
-                                pickerWrapperStyle={[localStyles.picker,{marginLeft:20}]}
+                                pickerWrapperStyle={[localStyles.picker,{marginLeft:0}]}
                                 minDate={startMinDate}
                                 maxDate={startMaxDate}
                                 date={this.state.startDate||new Date()}
@@ -128,7 +130,7 @@ export default class DateRangePicker extends PureComponent<IProps,any>{
                             <DatePicker
                                 style={[localStyles.picker]}
                                 showHeader={false}
-                                pickerWrapperStyle={[localStyles.picker,{marginLeft:20}]}
+                                pickerWrapperStyle={[localStyles.picker,{marginLeft:0}]}
                                 minDate={this.state.startDate||endMinDate}
                                 maxDate={endMaxDate}
                                 date={this.state.endDate||new Date()}
@@ -178,7 +180,7 @@ export default class DateRangePicker extends PureComponent<IProps,any>{
             case 0:
                 this.setState({
                     activeIndex: 1,
-                    startDate: new Date(),
+                    startDate: null,
                     endDate:null
                 },()=>this.onValueChange());
                 break;
@@ -288,7 +290,7 @@ const isNull = (value)=>{
 };
 
 
-const TimeBaseView = ({style,index,activeIndex,onPress,date})=>{
+const TimeBaseView = ({style,index,activeIndex,onPress,date, isSecond, showTimer})=>{
     let title ;
     switch (index)
     {
@@ -302,6 +304,12 @@ const TimeBaseView = ({style,index,activeIndex,onPress,date})=>{
     if(date&&date!=':')
     {
         title = moment(date).format('YYYY-MM-DD');
+        if (showTimer){
+            title = moment(date).format('YYYY-MM-DD HH:mm');
+            if (isSecond){
+                title = moment(date).format('YYYY-MM-DD HH:mm:ss');
+            }
+        }
     }
     else
     {

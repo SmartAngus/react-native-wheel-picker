@@ -30,13 +30,14 @@ export default class DatePicker extends PureComponent<IProps,IState>{
         showHeader: true,
         labelUnit: { year: '年', month: '月', date: '日', hour: '时', minute: '分', second: '秒' },
         mode: 'date',
-        maxDate: moment().add(10, 'years').toDate(),
+        maxDate: moment().add(100, 'years').toDate(),
         minDate: moment().add(-30, 'years').toDate(),
         date: new Date(),
         style: null,
         textColor: '#333',
         textSize: 26,
         itemSpace: 20,
+        hasSecond: false,
     };
 
     readonly state:IState = {
@@ -82,6 +83,7 @@ export default class DatePicker extends PureComponent<IProps,IState>{
         let dateWithUnit = moment(this.targetDate).date()+labelUnit.date;
         let hourWithUnit = moment(this.targetDate).hour()+labelUnit.hour;
         let minuteWithUnit = moment(this.targetDate).minute()+labelUnit.minute;
+        let secondWithUnit = moment(this.targetDate).second()+labelUnit.second;
         switch (props.mode) {
             case 'year':
                 dataArray = [yearWithUnit];
@@ -94,9 +96,15 @@ export default class DatePicker extends PureComponent<IProps,IState>{
                 break;
             case 'time':
                 dataArray = [hourWithUnit, minuteWithUnit];
+                if(this.props.hasSecond){
+                    dataArray.push(secondWithUnit);
+                }
                 break;
             case 'datetime':
                 dataArray = [yearWithUnit, monthWithUnit, dateWithUnit, hourWithUnit, minuteWithUnit];
+                if(this.props.hasSecond){
+                    dataArray.push(secondWithUnit);
+                }
                 break;
         }
         this.setState({
@@ -197,7 +205,8 @@ export default class DatePicker extends PureComponent<IProps,IState>{
     //生成时间数据，xx时xx分，不支持秒
     _genTimeData = (prop)=>{
         let pickerData:any = {};
-        const [hours, minutes] = [[], []];
+
+        let [hours, minutes, seconds] = [[], [], []];
 
         for (let i = 0; i < 24; i += 1) {
             hours.push(`${i}${this.props.labelUnit.hour}`);
@@ -207,6 +216,12 @@ export default class DatePicker extends PureComponent<IProps,IState>{
             minutes.push(`${i}${this.props.labelUnit.minute}`);
         }
         pickerData = [hours, minutes];
+        if (this.props.hasSecond){
+            for (let i = 0; i <= 59; i += 1) {
+                seconds.push(`${i}${this.props.labelUnit.second}`);
+            }
+            pickerData = [hours, minutes, seconds];
+        }
         return pickerData;
     }
 
@@ -265,6 +280,9 @@ export default class DatePicker extends PureComponent<IProps,IState>{
             case 'time':
                 date.hour(dataArray[0].replace(labelUnit.hour, ''))
                     .minute(dataArray[1].replace(labelUnit.minute, ''));
+                if (this.props.hasSecond){
+                    date.second(dataArray[2].replace(labelUnit.second, ''))
+                }
                 break;
             case 'datetime':
                 date.year(dataArray[0].replace(labelUnit.year, ''))
@@ -272,6 +290,9 @@ export default class DatePicker extends PureComponent<IProps,IState>{
                     .date(dataArray[2].replace(labelUnit.date, ''))
                     .hour(dataArray[3].replace(labelUnit.hour, ''))
                     .minute(dataArray[4].replace(labelUnit.minute, ''));
+                if (this.props.hasSecond){
+                    date.second(dataArray[5].replace(labelUnit.second, ''))
+                }
                 break;
         }
         return date;
